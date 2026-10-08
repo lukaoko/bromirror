@@ -1,0 +1,12 @@
+diff --git a/uxplay.cpp b/uxplay.cpp
+index be41031..efd07ee 100644
+--- a/uxplay.cpp
++++ b/uxplay.cpp
+@@ -3288,6 +3288,7 @@ int main (int argc, char *argv[]) {
+ #ifdef _WIN32
+     /* initialise Windows kernel qpc frequency for recv timestamping */
+     ntp_global_init();
++    setvbuf(stdout, NULL, _IONBF, 0); /* Bromirror: live output through pipes */
+ #endif
+ 
+ #ifdef _WIN32

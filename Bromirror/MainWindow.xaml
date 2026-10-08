@@ -1,0 +1,478 @@
+<Window x:Class="Bromirror.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bromirror" Width="1060" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen"
+        Icon="pack://application:,,,/bromirror.ico"
+        FontFamily="Segoe UI Variable Display, Segoe UI"
+        Foreground="{StaticResource TextBrush}"
+        UseLayoutRounding="True" SnapsToDevicePixels="True">
+
+    <Grid Margin="14">
+        <!-- Schatten separat, damit der Text scharf bleibt -->
+        <Border CornerRadius="22" Background="#0B0C0F">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="28" ShadowDepth="0" Opacity="0.65" Color="Black"/>
+            </Border.Effect>
+        </Border>
+
+        <Border CornerRadius="22" BorderBrush="#262932" BorderThickness="1">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0.4,1">
+                    <GradientStop Color="#15161B" Offset="0"/>
+                    <GradientStop Color="#0B0C0F" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+
+            <!-- warmer Glow oben links -->
+            <Border CornerRadius="22">
+                <Border.Background>
+                    <RadialGradientBrush Center="0.12,0.02" GradientOrigin="0.12,0.02" RadiusX="0.55" RadiusY="0.75">
+                        <GradientStop Color="#30FF7A1A" Offset="0"/>
+                        <GradientStop Color="#00FF7A1A" Offset="1"/>
+                    </RadialGradientBrush>
+                </Border.Background>
+
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="68"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- ===== Titelleiste ===== -->
+                    <Grid Background="Transparent" MouseLeftButtonDown="TitleBar_MouseDown">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="26,0,0,0">
+                            <Border Width="36" Height="36" CornerRadius="11" Background="{StaticResource AccentGradient}">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="#FF7A1A" BlurRadius="16" ShadowDepth="0" Opacity="0.5"/>
+                                </Border.Effect>
+                                <TextBlock Text="&#xE8EA;" FontFamily="Segoe MDL2 Assets" FontSize="17" Foreground="White"
+                                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <StackPanel Margin="14,0,0,0" VerticalAlignment="Center">
+                                <TextBlock Text="Bromirror" FontSize="18" FontWeight="Bold"/>
+                                <TextBlock Text="iPhone Screen Mirroring · AirPlay" FontSize="11.5"
+                                           Foreground="{StaticResource MutedBrush}" Margin="0,1,0,0"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Background="#0E0F13"
+                                CornerRadius="13" Padding="4" BorderBrush="#22262F" BorderThickness="1">
+                            <StackPanel Orientation="Horizontal">
+                                <RadioButton x:Name="PhoneTab" Style="{StaticResource TabPill}" GroupName="Pages"
+                                             IsChecked="True" Checked="Tab_Checked">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE8EA;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Text="iPhone → PC" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                                <RadioButton x:Name="TvTab" Style="{StaticResource TabPill}" GroupName="Pages"
+                                             Checked="Tab_Checked" Margin="4,0,0,0">
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="13" VerticalAlignment="Center"/>
+                                        <TextBlock Text="PC → TV" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,16,0">
+                            <Button Style="{StaticResource TitleButton}" Content="&#xE921;" Click="Minimize_Click" ToolTip="Minimieren"/>
+                            <Button Style="{StaticResource CloseButton}" Content="&#xE8BB;" Click="Close_Click" ToolTip="Beenden" Margin="4,0,0,0"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ===== Inhalt ===== -->
+                    <Grid x:Name="PhonePage" Grid.Row="1" Margin="26,4,26,18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.12*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Status-Karte -->
+                        <Border Style="{StaticResource Card}" Padding="28,30,28,24">
+                            <StackPanel VerticalAlignment="Center">
+                                <Grid Width="220" Height="220" HorizontalAlignment="Center">
+                                    <Grid x:Name="PulseHost">
+                                        <Ellipse x:Name="PulseRing1" Width="136" Height="136" StrokeThickness="2" Opacity="0"/>
+                                        <Ellipse x:Name="PulseRing2" Width="136" Height="136" StrokeThickness="2" Opacity="0"/>
+                                    </Grid>
+                                    <Ellipse x:Name="OuterRing" Width="178" Height="178" StrokeThickness="1" Opacity="0.35"
+                                             StrokeDashArray="2 4"/>
+                                    <Ellipse Width="136" Height="136">
+                                        <Ellipse.Fill>
+                                            <RadialGradientBrush GradientOrigin="0.35,0.3" Center="0.5,0.5" RadiusX="0.6" RadiusY="0.6">
+                                                <GradientStop x:Name="CoreInner" Color="#FFB067" Offset="0"/>
+                                                <GradientStop x:Name="CoreOuter" Color="#FF6A13" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </Ellipse.Fill>
+                                        <Ellipse.Effect>
+                                            <DropShadowEffect x:Name="CoreGlow" Color="#FF7A1A" BlurRadius="50" ShadowDepth="0" Opacity="0.75"/>
+                                        </Ellipse.Effect>
+                                    </Ellipse>
+                                    <TextBlock x:Name="CoreGlyph" Text="&#xE8EA;" FontFamily="Segoe MDL2 Assets" FontSize="46"
+                                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <TextBlock x:Name="StatusTitle" Text="OFFLINE" FontSize="32" FontWeight="Black"
+                                           HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                <TextBlock x:Name="StatusSub" FontSize="14" Foreground="{StaticResource MutedBrush}"
+                                           TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"
+                                           HorizontalAlignment="Center" Margin="0,6,0,0" MinHeight="38"/>
+
+                                <Border x:Name="DevicePanel" Visibility="Collapsed" HorizontalAlignment="Center"
+                                        Margin="0,10,0,0" Padding="16,8" CornerRadius="20" Background="#1A3DDC97"
+                                        BorderBrush="#553DDC97" BorderThickness="1">
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="#3DDC97" VerticalAlignment="Center"/>
+                                        <TextBlock x:Name="DeviceText" FontSize="13" FontWeight="SemiBold" Margin="10,0,0,0"
+                                                   Foreground="#C9F5E2"/>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,22,0,0">
+                                    <Button x:Name="PowerButton" Style="{StaticResource PrimaryButton}" MinWidth="210"
+                                            Click="Power_Click" Content="SERVER STARTEN"/>
+                                    <Button x:Name="DisconnectButton" Style="{StaticResource GhostButton}" Margin="12,0,0,0"
+                                            Click="Disconnect_Click" IsEnabled="False" ToolTip="Spiegelung beenden und Server neu starten">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets" FontSize="11" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Trennen" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <UniformGrid Columns="3" Margin="0,26,0,0">
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="0,0,6,0">
+                                        <StackPanel>
+                                            <TextBlock Text="LAUFZEIT" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="UptimeText" Text="--:--" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="3,0">
+                                        <StackPanel>
+                                            <TextBlock Text="SITZUNGEN" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="SessionsText" Text="0" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="6,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="AUTO-RETTUNGEN" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="RestartsText" Text="0" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Rechte Spalte -->
+                        <StackPanel Grid.Column="2">
+
+                            <Border x:Name="PigeonBanner" Visibility="Collapsed" CornerRadius="14" Padding="16,12"
+                                    Background="#1FFFB547" BorderBrush="#66FFB547" BorderThickness="1" Margin="0,0,0,14">
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Style="{StaticResource GhostButton}" Height="34" Padding="14,0"
+                                            Content="Beenden" Click="KillPigeon_Click" VerticalAlignment="Center"/>
+                                    <TextBlock Text="&#xE7BA;" FontFamily="Segoe MDL2 Assets" FontSize="16" Foreground="#FFB547"
+                                               VerticalAlignment="Center"/>
+                                    <StackPanel Margin="12,0,12,0" VerticalAlignment="Center">
+                                        <TextBlock Text="PigeonCast läuft noch" FontWeight="SemiBold" FontSize="13.5"/>
+                                        <TextBlock Text="Kann die Verbindung stören – lieber beenden." FontSize="12"
+                                                   Foreground="{StaticResource MutedBrush}"/>
+                                    </StackPanel>
+                                </DockPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel>
+                                    <TextBlock Text="IN 3 SCHRITTEN VERBINDEN" Style="{StaticResource Caption}"/>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="01" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Gleiches WLAN" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock Text="iPhone und PC im selben Netzwerk." FontSize="12.5"
+                                                       Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="02" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Kontrollzentrum öffnen" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock Text="Am iPhone oben rechts nach unten wischen." FontSize="12.5"
+                                                       Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="03" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Bildschirmsynchronisierung" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0">
+                                                <Run Text="Tippe auf "/><Run x:Name="StepName" Text="Bromirror" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold"/><Run Text=" – fertig."/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="EINSTELLUNGEN" Style="{StaticResource Caption}"/>
+                                    <TextBlock Text="Name auf dem iPhone" FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                        <TextBox x:Name="NameBox" Style="{StaticResource Input}" MaxLength="40" KeyDown="NameBox_KeyDown"/>
+                                        <Button x:Name="SaveNameButton" Grid.Column="1" Style="{StaticResource GhostButton}" Height="44"
+                                                Margin="10,0,0,0" Content="Speichern" Click="SaveName_Click"/>
+                                    </Grid>
+                                    <Border Height="1" Background="{StaticResource LineBrush}" Margin="0,16,0,8"/>
+                                    <CheckBox x:Name="FullscreenToggle" Style="{StaticResource Switch}" Content="Vollbild beim Spiegeln"
+                                              Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+                                    <CheckBox x:Name="AutoStartToggle" Style="{StaticResource Switch}" Content="Server beim Öffnen automatisch starten"
+                                              Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+                                    <CheckBox x:Name="IntroToggle" Style="{StaticResource Switch}" Content="Intro beim Start abspielen"
+                                              Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+                                    <CheckBox x:Name="WindowsToggle" Style="{StaticResource Switch}" Content="Mit Windows starten"
+                                              Checked="Toggle_Changed" Unchecked="Toggle_Changed"/>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ===== PC -> TV ===== -->
+                    <Grid x:Name="TvPage" Grid.Row="1" Margin="26,4,26,18" Visibility="Collapsed">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.12*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Sender-Karte -->
+                        <Border Style="{StaticResource Card}" Padding="28,30,28,24">
+                            <StackPanel VerticalAlignment="Center">
+                                <Grid Width="200" Height="200" HorizontalAlignment="Center">
+                                    <Grid x:Name="TvPulseHost" Visibility="Hidden">
+                                        <Ellipse x:Name="TvPulse1" Width="130" Height="130" StrokeThickness="2" Opacity="0"/>
+                                        <Ellipse x:Name="TvPulse2" Width="130" Height="130" StrokeThickness="2" Opacity="0"/>
+                                    </Grid>
+                                    <Ellipse x:Name="TvRing" Width="168" Height="168" StrokeThickness="1" Opacity="0.35" StrokeDashArray="2 4"/>
+                                    <Ellipse Width="130" Height="130">
+                                        <Ellipse.Fill>
+                                            <RadialGradientBrush GradientOrigin="0.35,0.3" Center="0.5,0.5" RadiusX="0.6" RadiusY="0.6">
+                                                <GradientStop x:Name="TvCoreInner" Color="#8D91A0" Offset="0"/>
+                                                <GradientStop x:Name="TvCoreOuter" Color="#5A5E6B" Offset="1"/>
+                                            </RadialGradientBrush>
+                                        </Ellipse.Fill>
+                                        <Ellipse.Effect>
+                                            <DropShadowEffect x:Name="TvCoreGlow" Color="#5A5E6B" BlurRadius="46" ShadowDepth="0" Opacity="0.75"/>
+                                        </Ellipse.Effect>
+                                    </Ellipse>
+                                    <TextBlock Text="&#xE7F4;" FontFamily="Segoe MDL2 Assets" FontSize="44"
+                                               Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <TextBlock x:Name="TvStatusTitle" Text="AUS" FontSize="32" FontWeight="Black"
+                                           HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                                <TextBlock x:Name="TvStatusSub" FontSize="14" Foreground="{StaticResource MutedBrush}"
+                                           TextAlignment="Center" TextWrapping="Wrap" MaxWidth="400"
+                                           HorizontalAlignment="Center" Margin="0,6,0,0" MinHeight="38"
+                                           Text="Starte den Sender, dann öffnest du deinen PC im Browser des Fernsehers."/>
+
+                                <Border x:Name="TvUrlPanel" Visibility="Collapsed" Margin="0,12,0,0" Padding="18,10,10,10"
+                                        CornerRadius="14" Background="#0E0F13" BorderBrush="#55FF7A1A" BorderThickness="1"
+                                        HorizontalAlignment="Center">
+                                    <StackPanel Orientation="Horizontal">
+                                        <StackPanel VerticalAlignment="Center">
+                                            <TextBlock Text="ADRESSE FÜR DEN TV-BROWSER" FontSize="9.5" FontWeight="Bold"
+                                                       Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="TvUrlText" FontFamily="Cascadia Mono, Consolas" FontSize="24"
+                                                       FontWeight="Bold" Foreground="#FFB067" Margin="0,2,0,0"/>
+                                        </StackPanel>
+                                        <Button Style="{StaticResource GhostButton}" Height="38" Padding="12,0" Margin="16,0,0,0"
+                                                VerticalAlignment="Center" Click="TvCopy_Click" ToolTip="Adresse kopieren">
+                                            <TextBlock Text="&#xE8C8;" FontFamily="Segoe MDL2 Assets" FontSize="14"/>
+                                        </Button>
+                                    </StackPanel>
+                                </Border>
+
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,20,0,0">
+                                    <Button x:Name="TvPowerButton" Style="{StaticResource PrimaryButton}" MinWidth="210"
+                                            Click="TvPower_Click" Content="SENDER STARTEN"/>
+                                    <Button x:Name="TvTestButton" Style="{StaticResource GhostButton}" Margin="12,0,0,0"
+                                            Click="TvTest_Click" IsEnabled="False" ToolTip="Stream hier im Browser öffnen">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="&#xE8A7;" FontFamily="Segoe MDL2 Assets" FontSize="12" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Testen" Margin="8,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+
+                                <UniformGrid Columns="3" Margin="0,24,0,0">
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="0,0,6,0">
+                                        <StackPanel>
+                                            <TextBlock Text="ZUSCHAUER" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="TvViewersText" Text="0" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="3,0">
+                                        <StackPanel>
+                                            <TextBlock Text="BILDER / S" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="TvFpsText" Text="–" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="#0F1014" CornerRadius="14" Padding="16,12" Margin="6,0,0,0">
+                                        <StackPanel>
+                                            <TextBlock Text="DATENRATE" FontSize="10" FontWeight="Bold" Foreground="{StaticResource SubtleBrush}"/>
+                                            <TextBlock x:Name="TvRateText" Text="–" FontSize="21" FontWeight="SemiBold" Margin="0,4,0,0"/>
+                                        </StackPanel>
+                                    </Border>
+                                </UniformGrid>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Rechte Spalte -->
+                        <StackPanel Grid.Column="2">
+                            <Border Style="{StaticResource Card}">
+                                <StackPanel>
+                                    <TextBlock Text="SO KOMMT DEIN PC AUF DEN TV" Style="{StaticResource Caption}"/>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="01" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Sender starten" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock Text="Beim ersten Mal die Windows-Firewall für private Netzwerke erlauben." FontSize="12.5"
+                                                       Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="02" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="TV-Browser öffnen" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock Text="Am Fernseher den Internet-Browser starten (gleiches Netzwerk)." FontSize="12.5"
+                                                       Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Grid>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions><ColumnDefinition Width="48"/><ColumnDefinition/></Grid.ColumnDefinitions>
+                                        <Border Width="36" Height="36" CornerRadius="11" Background="#1D1F26" VerticalAlignment="Top">
+                                            <TextBlock Text="03" FontWeight="Bold" FontSize="12.5" Foreground="{StaticResource AccentBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="Adresse eingeben" FontSize="14.5" FontWeight="SemiBold"/>
+                                            <TextBlock FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,2,0,0" TextWrapping="Wrap">
+                                                <Run x:Name="TvStepUrl" Text="Erscheint nach dem Start" Foreground="{StaticResource AccentBrush}" FontWeight="SemiBold"/><Run Text=" – dann OK drücken für Vollbild."/>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Style="{StaticResource Card}" Margin="0,14,0,0">
+                                <StackPanel>
+                                    <TextBlock Text="BILD" Style="{StaticResource Caption}"/>
+                                    <TextBlock Text="Bildschirm" FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,0,0,8"/>
+                                    <WrapPanel x:Name="TvMonitorPanel"/>
+                                    <TextBlock Text="Qualität" FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,8"/>
+                                    <WrapPanel>
+                                        <RadioButton x:Name="TvQuality720" Style="{StaticResource OptionPill}" GroupName="TvQuality"
+                                                     Content="Flüssig · 720p" Tag="720" Checked="TvQuality_Checked"/>
+                                        <RadioButton x:Name="TvQuality1080" Style="{StaticResource OptionPill}" GroupName="TvQuality"
+                                                     Content="Scharf · 1080p" Tag="1080" Checked="TvQuality_Checked"/>
+                                    </WrapPanel>
+                                    <TextBlock Text="Bildrate" FontSize="12.5" Foreground="{StaticResource MutedBrush}" Margin="0,6,0,8"/>
+                                    <WrapPanel>
+                                        <RadioButton x:Name="TvFps15" Style="{StaticResource OptionPill}" GroupName="TvFps"
+                                                     Content="15 fps" Tag="15" Checked="TvFps_Checked"/>
+                                        <RadioButton x:Name="TvFps24" Style="{StaticResource OptionPill}" GroupName="TvFps"
+                                                     Content="24 fps" Tag="24" Checked="TvFps_Checked"/>
+                                        <RadioButton x:Name="TvFps30" Style="{StaticResource OptionPill}" GroupName="TvFps"
+                                                     Content="30 fps" Tag="30" Checked="TvFps_Checked"/>
+                                    </WrapPanel>
+                                    <CheckBox x:Name="TvCursorToggle" Style="{StaticResource Switch}" Content="Mauszeiger anzeigen"
+                                              Checked="TvCursor_Changed" Unchecked="TvCursor_Changed" Margin="0,2,0,10"/>
+                                    <Border CornerRadius="12" Background="#0A0B0E" BorderBrush="{StaticResource LineBrush}"
+                                            BorderThickness="1" Height="128" ClipToBounds="True">
+                                        <Grid>
+                                            <TextBlock x:Name="TvPreviewHint" Text="Vorschau erscheint, sobald der Sender läuft"
+                                                       FontSize="12" Foreground="{StaticResource SubtleBrush}"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            <Image x:Name="TvPreview" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                        </Grid>
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                                        <TextBlock Text="&#xE946;" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                   Foreground="{StaticResource SubtleBrush}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Nur Bild, kein Ton – der Ton bleibt am PC." FontSize="11.5"
+                                                   Foreground="{StaticResource SubtleBrush}" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- ===== Protokoll ===== -->
+                    <StackPanel Grid.Row="2" Margin="26,0,26,18">
+                        <DockPanel>
+                            <TextBlock DockPanel.Dock="Right" x:Name="FooterInfo" FontSize="11" Foreground="{StaticResource SubtleBrush}"
+                                       VerticalAlignment="Center"/>
+                            <Button x:Name="LogToggle" Style="{StaticResource LinkButton}" Click="LogToggle_Click"
+                                    HorizontalAlignment="Left" Content="PROTOKOLL ANZEIGEN  ▾"/>
+                        </DockPanel>
+                        <Border x:Name="LogPanel" Visibility="Collapsed" Height="150" Margin="0,6,0,0"
+                                CornerRadius="14" Background="#0A0B0E" BorderBrush="{StaticResource LineBrush}" BorderThickness="1"
+                                Padding="14,10">
+                            <ListBox x:Name="LogList" Background="Transparent" BorderThickness="0"
+                                     FontFamily="Cascadia Mono, Consolas" FontSize="11.5" Foreground="#A3A7B2"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListBox.ItemContainerStyle>
+                                    <Style TargetType="ListBoxItem">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="ListBoxItem">
+                                                    <ContentPresenter Margin="0,1"/>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </ListBox.ItemContainerStyle>
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Border>
+    </Grid>
+</Window>

@@ -1,0 +1,82 @@
+<Window x:Class="Bromirror.IntroWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Bromirror" Width="780" Height="780"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        Topmost="True" ShowInTaskbar="False" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen" Cursor="Hand"
+        FontFamily="Segoe UI Variable Display, Segoe UI">
+
+    <Grid x:Name="Root" RenderTransformOrigin="0.5,0.5">
+        <Grid.RenderTransform>
+            <ScaleTransform x:Name="RootScale"/>
+        </Grid.RenderTransform>
+
+        <!-- Abdunklung, damit das HUD auf jedem Hintergrund lesbar ist -->
+        <Ellipse x:Name="Backdrop" Width="770" Height="770" Opacity="0">
+            <Ellipse.Fill>
+                <RadialGradientBrush>
+                    <GradientStop Color="#F50A0A0C" Offset="0"/>
+                    <GradientStop Color="#E60A0A0C" Offset="0.62"/>
+                    <GradientStop Color="#000A0A0C" Offset="1"/>
+                </RadialGradientBrush>
+            </Ellipse.Fill>
+        </Ellipse>
+
+        <Canvas x:Name="TickCanvas" Width="780" Height="780" Opacity="0"/>
+        <Canvas x:Name="SweepHost" Width="780" Height="780" Opacity="0"/>
+
+        <Ellipse x:Name="Ring1" Width="610" Height="610" Stroke="#FF7A1A" StrokeThickness="1.5" StrokeDashArray="1 4" Opacity="0"/>
+        <Ellipse x:Name="Ring2" Width="540" Height="540" Stroke="#FF8A2A" StrokeThickness="5" StrokeDashArray="18 6 3 6" Opacity="0"/>
+        <Ellipse x:Name="Ring3" Width="476" Height="476" Stroke="#66FF7A1A" StrokeThickness="1" Opacity="0"/>
+        <Ellipse x:Name="Ring4" Width="420" Height="420" Stroke="#FFA246" StrokeThickness="12" StrokeDashArray="0.25 0.5" Opacity="0"/>
+        <Ellipse x:Name="Arc1" Width="350" Height="350" Stroke="#FFB067" StrokeThickness="3" StrokeDashArray="30 60" Opacity="0"/>
+        <Ellipse x:Name="Arc2" Width="300" Height="300" Stroke="#FF6A13" StrokeThickness="2" StrokeDashArray="70 30 8 30" Opacity="0"/>
+
+        <!-- Logo-Kern -->
+        <Border x:Name="Core" Width="100" Height="100" CornerRadius="30" Opacity="0" RenderTransformOrigin="0.5,0.5">
+            <Border.RenderTransform>
+                <TransformGroup>
+                    <ScaleTransform x:Name="CoreScale" ScaleX="0" ScaleY="0"/>
+                    <TranslateTransform Y="-38"/>
+                </TransformGroup>
+            </Border.RenderTransform>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FFA246" Offset="0"/>
+                    <GradientStop Color="#FF6A13" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+            <Border.Effect>
+                <DropShadowEffect x:Name="CoreGlow" Color="#FF7A1A" BlurRadius="60" ShadowDepth="0" Opacity="0.9"/>
+            </Border.Effect>
+            <TextBlock Text="&#xE8EA;" FontFamily="Segoe MDL2 Assets" FontSize="44" Foreground="White"
+                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Border>
+
+        <TextBlock x:Name="PercentText" Text="000%" FontFamily="Cascadia Mono, Consolas" FontSize="13"
+                   Foreground="#FFB067" HorizontalAlignment="Center" VerticalAlignment="Center" Opacity="0">
+            <TextBlock.RenderTransform><TranslateTransform Y="-118"/></TextBlock.RenderTransform>
+        </TextBlock>
+
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel.RenderTransform><TranslateTransform Y="62"/></StackPanel.RenderTransform>
+            <TextBlock x:Name="TitleText" FontSize="25" FontWeight="Black" Foreground="#FFF1E4"
+                       HorizontalAlignment="Center" MinHeight="34">
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#FF7A1A" BlurRadius="18" ShadowDepth="0" Opacity="1"/>
+                </TextBlock.Effect>
+            </TextBlock>
+            <TextBlock x:Name="SubtitleText" Text="A I R P L A Y   M I R R O R I N G   S Y S T E M" FontSize="9.5"
+                       FontWeight="SemiBold" Foreground="#FF9A4D" HorizontalAlignment="Center"
+                       Margin="0,4,0,0" Opacity="0"/>
+        </StackPanel>
+
+        <Border HorizontalAlignment="Center" VerticalAlignment="Center" Background="#E60A0A0C"
+                BorderBrush="#55FF7A1A" BorderThickness="1" CornerRadius="10" Padding="14,6">
+            <Border.RenderTransform><TranslateTransform Y="346"/></Border.RenderTransform>
+            <TextBlock x:Name="StatusText" FontFamily="Cascadia Mono, Consolas" FontSize="12.5" FontWeight="SemiBold"
+                       Foreground="#FFC285" MinWidth="250"/>
+        </Border>
+    </Grid>
+</Window>

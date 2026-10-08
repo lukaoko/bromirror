@@ -1,0 +1,19 @@
+# Geheimnisse – AirPlay-Identitaet dieses PCs, niemals committen
+*.pem
+*.key
+
+# Fremdcode: wird per scripts/build-uxplay.sh geholt und gepatcht
+UxPlay/
+bonjour/
+
+# Build-Ausgaben
+app/
+bin/
+obj/
+*.user
+
+# Laufzeitdaten
+logs/
+
+# Veralteter Terminal-Launcher (durch Bromirror.exe ersetzt)
+MirrorCast.ps1
